@@ -1,0 +1,74 @@
+{
+    "name": "audiodrawer",
+    "productName": "Audio Drawer",
+    "version": "0.1.0",
+    "description": "Audio Drawer",
+    "main": "main.js",
+    "bin": "cli.js",
+    "scripts": {
+        "start": "electron .",
+        "dev": "electron . --debug",
+        "test": "mocha && standard",
+        "package": "npm-run-all package:*",
+        "pack": "npm run pack:main &amp;&amp; npm run pack:renderer",
+        "xpackage:mas": "./script/mas.sh",
+        "windows-store": "node ./script/windows-store.js",
+        "release": "node ./script/release.js",
+        "prepack": "check-for-leaks",
+        "prepush": "check-for-leaks",
+        "dist": "electron-builder"
+    },
+    "repository": "https://github.com/rexfa/audiodrawer",
+    "keywords": [
+        "audio",
+        "Electron",
+        "tools"
+    ],
+    "author": "Rex Zhang",
+    "license": "MIT",
+    "devDependencies": {
+        "@octokit/rest": "^16.3.2",
+        "chai": "^3.4.1",
+        "chai-as-promised": "^6.0.0",
+        "check-for-leaks": "^1.2.1",
+        "devtron": "^1.3.0",
+        "electron-packager": "^12.1.0",
+        "electron-winstaller": "^2.2.0",
+        "husky": "^0.14.3",
+        "mocha": "^5.2.0",
+        "npm-run-all": "^4.0.2",
+        "request": "^2.70.0",
+        "rimraf": "^2.5.2",
+        "signcode": "^0.5.0",
+        "spectron": "^5.0.0",
+        "standard": "^8.2.0"
+    },
+    "dependencies": {
+        "electron": "^5.0.1",
+        "electron-log": "^2.2.14",
+        "electron-settings": "^3.0.7",
+        "glob": "^7.1.0"
+    },
+    "standard": {
+        "env": {
+            "mocha": true
+        }
+    },
+    "build": {
+        "productName": "audiodrawer",
+        "appId": "cc.rexfa.audiodrawer",
+        "output": "build"
+    },
+    "mac": {
+        "icon": "assets/app-icon/mac/dna.icns",
+        "artifactName": "${productName}_setup_${version}.${ext}"
+    },
+    "win": {
+        "icon": "bassets/app-icon/win/dna.ico",
+        "artifactName": "${productName}_setup_${version}.${ext}"
+    },
+    "linux": {
+        "icon": "bassets/app-icon/png",
+        "artifactName": "${productName}_setup_${version}.${ext}"
+    }
+}
