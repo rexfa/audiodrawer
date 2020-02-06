@@ -1,0 +1,44 @@
+/* Custom Properties */
+
+:root {
+    --color: hsl(30, 100%, 55%);
+    --color-subtle: hsl(30, 100%, 55%);
+    --color-strong: hsl(30, 100%, 75%);
+    --color-link: hsl(30, 100%, 80%);
+    --color-border: hsl(30, 100%, 55%);
+    --color-bg: hsl(0, 0%, 20%);
+    --color-accent: hsl(30, 90%, 50%);
+    ;
+    /* Fallback */
+}
+
+
+/* Category Colors */
+
+.u-category-jobs {
+    --color-accent: hsl(30, 100%, 55%);
+}
+
+.u-category-windows {
+    --color-accent: hsl(30, 100%, 55%);
+}
+
+.u-category-menu {
+    --color-accent: hsl(30, 100%, 55%);
+}
+
+.u-category-native-ui {
+    --color-accent: hsl(30, 100%, 55%);
+}
+
+.u-category-communication {
+    --color-accent: hsl(30, 80%, 65%);
+}
+
+.u-category-system {
+    --color-accent: hsl(30, 80%, 65%);
+}
+
+.u-category-media {
+    --color-accent: hsl( 36, 77%, 34%);
+}
