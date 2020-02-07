@@ -17,19 +17,28 @@
     </nav>
     <main class="content js-content">
         <div id="showone">
-
         </div>
+        <p>
+            <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                <i class="glyphicon glyphicon-play"></i>
+                Play
+            </button>
+        </p>
     </main>
-
+    <script src="./assets/lib/wavesurfer/wavesurferforbrowsers.js"></script>
+    <script src="./assets/lib/wavesurfer/plugin/wavesurfer.regions.min.js"></script>
     <script>
-        import WaveSurfer from "./assets/lib/wavesurfer/wavesurfer.js";
+        //require('./assets/imports')
+        //require('./assets/ex-links')
+        require('./assets/nav')
+
         this.wavesurfer = WaveSurfer.create({
             container: "#showone",
             waveColor: "#368666",
             progressColor: "#6d9e8b",
             cursorColor: "#fff",
             height: 80,
-            plugins: [RegionsPlugin.create()]
+            plugins: [WaveSurfer.regions.create()]
         });
         // 音频加载
         this.wavesurfer.load('./audios/example/yangzirong.mp3');
