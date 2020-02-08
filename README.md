@@ -3,4 +3,5 @@
 
 尝试做一个音频编辑小工具
 
-计划接入deezer的spleeter
+计划接入deezer的spleeter https://github.com/deezer/spleeter
+
