@@ -5,3 +5,5 @@
 
 计划接入deezer的spleeter https://github.com/deezer/spleeter
 
+很遗憾pip安装不能使用GPU
+
