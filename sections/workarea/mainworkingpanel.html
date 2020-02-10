@@ -6,6 +6,9 @@
             <input id="sourceaudio" type="file">
         </div>
         <div>
+            <label id="labsourcepath">Please input file.</label>
+        </div>
+        <div>
             <button onclick="wavesurfer.playPause()">
                 Play
             </button>
@@ -13,10 +16,18 @@
                 <i class="glyphicon glyphicon-play"></i>
                 Change
             </button>
+            <select id="selectSeparateSetting">
+                <option value="spleeter:2stems" selected>2stems</option>
+                <option value="spleeter:4stems">4stems</option>
+                <option value="spleeter:5stems">5stems</option>
+            </select>
             <button class="btn btn-primary" onclick="">
                 <i class="glyphicon glyphicon-play"></i>
                 Separate
             </button>
+        </div>
+        <div>
+            <label id="labseparatestatus">Stopped</label>
         </div>
         <script>
             const spawn = require('child_process').spawn;
@@ -29,69 +40,115 @@
                 height: 80,
                 plugins: [WaveSurfer.regions.create()]
             });
-            function setWavesutferSource() {
-                // 不要用value取值
+            function showSeparateStatus(msg) {
+                var labebdom = document.getElementById('labseparatestatus');
+                labebdom.innerHTML = msg;
+            }
+            function showAudioPath(path) {
+                var labebdom = document.getElementById('labsourcepath');
+                labebdom.innerHTML = path;
+            }
+            function getAudioFlieName() {
                 if (document.getElementById('sourceaudio').files[0]) {
-                    var audiopath = document.getElementById('sourceaudio').files[0].path;
+                    return document.getElementById('sourceaudio').files[0].name;
+                } else {
+                    return null;
+                }
+            }
+            //获取audioFlieName文件名称（去掉扩展名）
+            function getAudioName(audioFlieName) {
+                return audioFlieName.substring(0, audioFlieName.indexOf("."));
+            }
+            function setWavesutferSource() {
 
+                if (document.getElementById('sourceaudio').files[0]) {
+                    // 不要用value取值
+                    var audiopath = document.getElementById('sourceaudio').files[0].path;
+                    showAudioPath(audiopath);
                     this.wavesurfer.load(audiopath);
                     let duration = parseInt(this.wavesurfer.getDuration());
                     this.wavesurfer.stop();
+                    //console.log("name:" + getAudioFlieName());
                 }
+            }
+            function getSeparateSetting() {
+                var separateSetting = document.getElementById('selectSeparateSetting');
+                var index = separateSetting.selectedIndex; // 选中索引
+                var text = separateSetting.options[index].text; // 选中文本
+                var value = separateSetting.options[index].value; // 选中值
+                return value;
             }
             function runSpawnSeparate() {
                 let iconv = require('iconv-lite');
-                //spleeter separate -i audio_example.mp3 -o audio_output -p spleeter:4stems
+                //D:\VSCode\Javascript\audiodrawer\audios\example>spleeter separate -i yangzirong.mp3 -o yangzirong -p spleeter:4stems
+                //spleeter separate -i C:\Users\Rex\Music\hero.mp3 -o D:\VSCode\Javascript\audiodrawer\audios -p spleeter:4stems
+                // Can redownload model put to C:\Users[user name]\pretrained_models Works with me...
+                //Model https://github.com/deezer/spleeter/releases/
                 //spleeter:2stems
                 //spleeter:4stems
                 //spleeter:5stems
-                let cmdStr = 'spleeter separate -i audio_example.mp3 -o audio_output -p spleeter:4stems';
-                // 执行cmd命令的目录，如果使用cd xx && 上面的命令，这种将会无法正常退出子进程
-                let cmdPath = './';
-                // 子进程名称
-                let workerProcess;
-                var arr = [];
-                var encodingName = "GBK";
-                /*const productName = require('/package').productName
-                switch (process.platform) {
-                    case 'darwin':
-                        encodingName = "utf8";
-                        break;
-                    case 'win32':
-                        encodingName = "GBK";
-                        break;
-                    case 'freebsd':
-                    case 'linux':
-                    case 'sunos':
-                        encodingName = "utf8";
-                        break;
-                    default:
-                        throw new Error(`Unknown userDataPath path for platform ${process.platform}`)
-                }*/
-                // 执行命令行，如果命令不需要路径，或就是项目根目录，则不需要cwd参数：
-                //增加GBK编码
-                workerProcess = spawn(cmdStr, ['-t', 'www.163.com'], { cwd: cmdPath, encoding: encodingName });
-                //可写流stdin暂不测试  stdio的[0][1][2] 已经由stdin stdout 和stderr 单独实现
-                // 打印正常的后台可执行程序输出
-                workerProcess.stdout.on('data', function (data) {
-                    arr.push(data);
-                    //console.log(data);
-                    var arr1 = [];
-                    arr1.push(data);
-                    //console.log(" new data");
-                    console.log(iconv.decode(Buffer.concat(arr1), encodingName));
-                });
-                // 打印错误的后台可执行程序输出
-                workerProcess.stderr.on('data', function (data) {
-                    console.log('stderr: ' + data);
-                });
-                // 退出之后的输出
-                workerProcess.on('close', function (code) {
-                    //console.log(arr); //utf8可能造成乱码
-                    //console.log(iconv.decode(Buffer.concat(arr), encodingName)); // 改成GBK模式 
-                    console.log('out code：' + code);
-                });
-                return workerProcess;
+                if (document.getElementById('sourceaudio').files[0]) {
+                    let cmdStr = 'spleeter';
+                    let cmdsubStr = 'separate';
+                    let cmdSetInput = '-i';
+                    let cmdSource = 'audio_example.mp3';
+                    // 不要用value取值
+                    cmdSource = document.getElementById('sourceaudio').files[0].path;
+                    let cmdSetOutput = '-o';
+                    let cmdTarget = 'D:\\VSCode\\Javascript\\audiodrawer\\audios';
+                    let cmdSetSetting = '-p';
+                    let cmdSetting = 'spleeter:2stems';
+                    cmdSetting = getSeparateSetting();
+                    // 执行cmd命令的目录，如果使用cd xx && 上面的命令，这种将会无法正常退出子进程
+                    let cmdPath = './';
+                    // 子进程名称
+                    let workerProcess;
+                    var arr = [];
+                    var encodingName = "GBK";
+                    /*const productName = require('/package').productName
+                    switch (process.platform) {
+                        case 'darwin':
+                            encodingName = "utf8";
+                            break;
+                        case 'win32':
+                            encodingName = "GBK";
+                            break;
+                        case 'freebsd':
+                        case 'linux':
+                        case 'sunos':
+                            encodingName = "utf8";
+                            break;
+                        default:
+                            throw new Error(`Unknown userDataPath path for platform ${process.platform}`)
+                    }*/
+                    // 执行命令行，如果命令不需要路径，或就是项目根目录，则不需要cwd参数：
+                    //增加GBK编码
+                    workerProcess = spawn(cmdStr, [cmdsubStr, cmdSetInput, cmdSource, cmdSetOutput, cmdTarget, cmdSetSetting, cmdSetting], { cwd: cmdPath, encoding: encodingName });
+                    //可写流stdin暂不测试  stdio的[0][1][2] 已经由stdin stdout 和stderr 单独实现
+                    // 打印正常的后台可执行程序输出
+                    workerProcess.stdout.on('data', function (data) {
+                        arr.push(data);
+                        //console.log(data);
+                        var arr1 = [];
+                        arr1.push(data);
+                        //console.log(" new data");
+                        console.log(iconv.decode(Buffer.concat(arr1), encodingName));
+                    });
+                    // 打印错误的后台可执行程序输出
+                    workerProcess.stderr.on('data', function (data) {
+                        console.log('stderr: ' + data);
+                    });
+                    // 退出之后的输出
+                    workerProcess.on('close', function (code) {
+                        //console.log(arr); //utf8可能造成乱码
+                        //console.log(iconv.decode(Buffer.concat(arr), encodingName)); // 改成GBK模式 
+                        console.log('out code：' + code);
+                    });
+                    return workerProcess;
+                } else {
+                    return null;
+                }
+
             }
             // 音频加载
             this.wavesurfer.load('./audios/example/yangzirong.mp3');
