@@ -21,13 +21,22 @@
                 <option value="spleeter:4stems">4stems</option>
                 <option value="spleeter:5stems">5stems</option>
             </select>
-            <button class="btn btn-primary" onclick="">
+            <button class="btn btn-primary" onclick="runSpawnSeparate()">
                 <i class="glyphicon glyphicon-play"></i>
                 Separate
             </button>
         </div>
         <div>
             <label id="labseparatestatus">Stopped</label>
+        </div>
+        <div id='resultscontent' class="resultscontent"></div>
+        <div class="resultscripttemplate hidden">
+            <div class="resultaudioContainer">
+                <div  class="resultaudio"></div>
+                <button class="resultaudio-button">
+                    Play
+                </button>
+            </div>
         </div>
         <script>
             const spawn = require('child_process').spawn;
@@ -40,6 +49,8 @@
                 height: 80,
                 plugins: [WaveSurfer.regions.create()]
             });
+            var wavesurferArr = new Array();
+
             function showSeparateStatus(msg) {
                 var labebdom = document.getElementById('labseparatestatus');
                 labebdom.innerHTML = msg;
@@ -59,8 +70,8 @@
             function getAudioName(audioFlieName) {
                 return audioFlieName.substring(0, audioFlieName.indexOf("."));
             }
+            //设置原
             function setWavesutferSource() {
-
                 if (document.getElementById('sourceaudio').files[0]) {
                     // 不要用value取值
                     var audiopath = document.getElementById('sourceaudio').files[0].path;
@@ -69,6 +80,8 @@
                     let duration = parseInt(this.wavesurfer.getDuration());
                     this.wavesurfer.stop();
                     //console.log("name:" + getAudioFlieName());
+                    findResultDataDirAndLoad(getAudioName(getAudioFlieName()));
+
                 }
             }
             function getSeparateSetting() {
@@ -83,6 +96,7 @@
                 //D:\VSCode\Javascript\audiodrawer\audios\example>spleeter separate -i yangzirong.mp3 -o yangzirong -p spleeter:4stems
                 //spleeter separate -i C:\Users\Rex\Music\hero.mp3 -o D:\VSCode\Javascript\audiodrawer\audios -p spleeter:4stems
                 // Can redownload model put to C:\Users[user name]\pretrained_models Works with me...
+                // Electron model .\pretrained_models
                 //Model https://github.com/deezer/spleeter/releases/
                 //spleeter:2stems
                 //spleeter:4stems
@@ -150,6 +164,47 @@
                 }
 
             }
+            /*
+            目录检索部分
+            */
+            function findResultDataDirAndLoad(sourceName) {
+                var fs = require('fs');
+                var dataPath = "./audios/" + sourceName;
+                var files = fs.readdirSync(dataPath);
+                //console.log(files);
+                var template = document.getElementsByClassName("resultscripttemplate");
+                clearContainerContentDom('resultscontent');
+                for (var key in files) {
+                    let clone = template[0].children[0].cloneNode(true);
+                    var audioSW =  clone.getElementsByClassName("resultaudio")[0];
+                    audioSW.setAttribute('id',"audioSWcontent"+key);
+              
+                    var playbtn = clone.getElementsByClassName("resultaudio-button")[0];
+                    playbtn.setAttribute('id',"audioSWbutton"+key);
+                    playbtn.setAttribute('onclick',"wavesurferArr["+key+"].playPause()");
+                    
+                    setContainerContentDom('resultscontent', "audioSW"+key, clone);
+          
+                    wavesurferArr[key] = WaveSurfer.create({
+                        container: "#"+"audioSWcontent"+key,
+                        waveColor: "#368666",
+                        progressColor: "#6d9e8b",
+                        cursorColor: "#fff",
+                        height: 80,
+                        plugins: [WaveSurfer.regions.create()]
+                    });
+                    wavesurferArr[key].load(dataPath+"/"+files[key]);
+                    //var playbtnE = document.getElementById("audioSWbutton"+key);
+                    //playbtnE.addEventListener('click', function(){wavesurferArr[key].playPause();});
+                }
+            }
+
+            function setContainerContentDom(containerId, domId, contentDom) {
+                let container = document.getElementById(containerId);
+                contentDom.setAttribute('id', domId);
+                container.appendChild(contentDom);
+            }
+
             // 音频加载
             this.wavesurfer.load('./audios/example/yangzirong.mp3');
             // 获取总时长

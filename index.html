@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="assets/css/nativize.css">
     <link rel="stylesheet" href="assets/css/global.css">
     <link rel="stylesheet" href="assets/css/nav.css">
+    <link rel="stylesheet" href="assets/css/mainworkingpanel.css">
 
     <link rel="import" href="sections/settingarea/settingspanel.html">
     <link rel="import" href="sections/workarea/mainworkingpanel.html">
@@ -34,9 +35,20 @@
     <script src="./assets/lib/wavesurfer/wavesurferforbrowsers.js"></script>
     <script src="./assets/lib/wavesurfer/plugin/wavesurfer.regions.min.js"></script>
     <script>
-        require('./assets/imports')
-            //require('./assets/ex-links')
-        require('./assets/nav')
+        require('./assets/imports');
+        //require('./assets/ex-links')
+        require('./assets/nav');
+
+        function clearContainerContentDom(containerId) {
+            let container = document.getElementById(containerId);
+            var childs = container.childNodes;
+            //console.log(childs);
+            if (childs.length > 0) {
+                for (var c in childs) {
+                    container.removeChild(c);
+                }
+            }
+        }
     </script>
 </body>
 
